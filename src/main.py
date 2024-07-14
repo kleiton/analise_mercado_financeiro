@@ -4,6 +4,8 @@ from datetime import datetime
 import pandas as pd
 
 from scraping.scraping import Scraping
+from gerar_pdf import CsvParaPdf
+from modelos import MagicForm, ModelBazin, ModelGrahan
 from util import Utils
 
 if __name__ == "__main__":
@@ -12,7 +14,7 @@ if __name__ == "__main__":
     mes_atual = datetime.now().month
     ano_atual = datetime.now().year
     
-    tipo_papel = "fiis"
+    tipo_papel = "acoes" # Tipo de papel pode assumir os tipos ('acoes' ou 'fiis').
     
     d_base = "./dados/"
     d_extraidos = f"{d_base}01_extraidos/"
@@ -50,3 +52,14 @@ if __name__ == "__main__":
 
         scraping.salvar_dataframe_como_csv(dados_filtrados_renomeado, tipo_papel, diretorio=d_processados,
                                            nome_do_arquivo=f'{tipo_papel}_consolidados_tratados_renomeados_')
+        
+        if tipo_papel == "acoes":
+            ModelGrahan().model_grahan()
+            MagicForm().magic_form()
+            ModelBazin().model_bazin()
+            CsvParaPdf().gerar_pdf_de_csv()
+            logging.info(f"Processamento dos dados de {tipo_papel} finalizado!")
+        else:
+                logging.info(f"Processamento dos dados de {tipo_papel} finalizado!")
+    else:
+        logging.info("Erro ao realizar o processamento dos dados")
